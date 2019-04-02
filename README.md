@@ -11,6 +11,8 @@
 3. 下载并运行，验证是否能在本地下载文件
 
 ## 开发 
+### 要求
+- nodejs 版本大于 v8
 ### 代码质量
 ```powershell
 sonar-scanner.bat
