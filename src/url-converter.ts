@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
-import * as url from "url";
 import * as path from "path";
 import * as process from "process";
+import * as URL from "url";
 
 const rootPath = process.cwd();
 const outputDir = path.join(rootPath, "output");
@@ -45,8 +45,8 @@ class Converter {
     // copy string
     let result = (" " + text).slice(1);
     this .urlArray.forEach((s) => {
-      p = url.parse(s);
-      result=result.replace(s, `http://127.0.0.1:8000${p.path}${p.hash}`);
+      p = URL.parse(s);
+      result = result.replace(s, `http://127.0.0.1:8000${p.path}${p.hash}`);
     });
     return result;
   }
@@ -64,7 +64,7 @@ class Converter {
     }
     const inputFile = path.join(rootPath, fileName);
     const urlsFile = path.join(outputDir, "input" + path.extname(fileName));
-    const outputFile = path.join(outputDir, "output"+ path.extname(fileName));
+    const outputFile = path.join(outputDir, "output" + path.extname(fileName));
     const text = fs.readFileSync(inputFile, "utf-8");
 
     try {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fix":"tslint --fix -c ./tslint.json 'src/**/*{.ts,.tsx}'"
+    "fix": "tslint --fix -c ./tslint.json 'src/**/*{.ts,.tsx}'"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,11 @@
   "homepage": "https://github.com/alwxkxk/downloadConverter#readme",
   "dependencies": {
     "@types/fs-extra": "^5.0.5",
+    "@types/progress": "^2.0.3",
+    "@types/request": "^2.48.1",
     "fs-extra": "^7.0.1",
+    "progress": "^2.0.3",
+    "request": "^2.88.0",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {
