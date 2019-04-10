@@ -7,6 +7,7 @@ import * as URL from "url";
 
 const rootPath = process.cwd();
 const outputDir = path.join(rootPath, "output");
+const logPath = path.join(rootPath, "downloader.log");
 const parallelNum = 3;
 type ICallback = ( error: Error, result?: number )  => void;
 
@@ -33,6 +34,11 @@ class Downloader {
     const pathname = URL.parse(url).pathname;
     const filePath = path.join(outputDir, pathname);
     request.get(url, (err, httpResponse, body)=>{
+      if(err){
+        console.log("download request get error:", err);
+        fs.appendFile(logPath, `error: ${url} ${err}\n`);
+      }
+      fs.appendFile(logPath, `completed: ${url} \n`);
       onCompleted(err);
     })
     .on("response", (response) => {
@@ -74,4 +80,4 @@ export default Downloader;
 //   "https://github.com/earlephilhower/esp-quick-toolchain/releases/download/2.5.0-2/x86_64-apple-darwin14.xtensa-lx106-elf-59d892c8.tar.gz"];
 
 // const test = new Downloader();
-// test.start(urlsArray4);
+// test.start(urlsArray3);

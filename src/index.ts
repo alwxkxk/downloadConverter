@@ -9,5 +9,5 @@ converter.start("package_esp8266com_index.json")
   downloader.start(urlsArray);
 })
 .catch((error)=>{
-  console.log(error);
+  console.log("err:", error);
 });
