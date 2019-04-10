@@ -28,7 +28,6 @@ class Downloader {
         q.push(urlsArray);
     }
     download(url, onCompleted) {
-        console.log("download:", url);
         let pathname = URL.parse(url).pathname;
         if (pathname.split("/").pop() === "") {
             pathname += 'index.html';
@@ -39,6 +38,7 @@ class Downloader {
                 console.log("download request get error:", err);
                 fs.appendFile(logPath, `error: ${url} ${err}\n`);
             }
+            console.log("completed:", url);
             fs.appendFile(logPath, `completed: ${url} \n`);
             onCompleted(err);
         })
@@ -47,7 +47,8 @@ class Downloader {
             fs.ensureFileSync(filePath);
             response.pipe(fs.createWriteStream(filePath));
             // show download progress bar
-            const len = parseInt(response.headers["content-length"], 10);
+            // content-length isn't guaranteed so it could be 0 and make bug. set a value if content-length is 0.
+            const len = parseInt(response.headers["content-length"], 10) || 100000000;
             const bar = new ProgressBar("downloading [:bar] :rate/bps :percent :etas", {
                 complete: "=",
                 incomplete: " ",
@@ -71,10 +72,13 @@ exports.default = Downloader;
 //   "http://ww1.sinaimg.cn/large/005BIQVbgy1fw7hir4bdrj30si0fuwmo.jpg",
 // "http://ww1.sinaimg.cn/large/005BIQVbgy1fxa5xk5h9gj30rj09rq55.jpg",
 // "http://ww1.sinaimg.cn/large/005BIQVbgy1fxa63z5bylj30ms0bmq5j.jpg",
-// "https://arduino-esp8266.readthedocs.io/en/2.5.0-beta2/",
 // "https://arduino-esp8266.readthedocs.io/en/2.5.0/index"];
 // const urlsArray4 = [
 //   "https://github.com/earlephilhower/esp-quick-toolchain/releases/download/2.5.0-3/x86_64-apple-darwin14.xtensa-lx106-elf-20ed2b9c.tar.gz",
 //   "https://github.com/earlephilhower/esp-quick-toolchain/releases/download/2.5.0-2/x86_64-apple-darwin14.xtensa-lx106-elf-59d892c8.tar.gz"];
+// const urlsArray5=[
+//   "https://github.com/esp8266/Arduino",
+//   "http://esp8266.com/arduino"
+// ];
 // const test = new Downloader();
-// test.start(urlsArray3);
+// test.start(urlsArray5);
