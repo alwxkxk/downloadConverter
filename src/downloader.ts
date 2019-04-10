@@ -18,24 +18,28 @@ class Downloader {
     if (!urlsArray || !urlsArray.length) {
       return console.warn("urlsArray length is 0");
     }
-    console.log(`download file number:${urlsArray.length}`);
+    console.log(`the number of files: ${urlsArray.length}`);
     // download by queue
     const q = queue((url: string, callback: ICallback) => {
       this .download(url, callback);
     }, parallelNum);
 
     q.drain = () => {
-      console.log("all items have been processed");
+      console.log("all file have been downloaded.");
     };
 
     q.push(urlsArray);
   }
   public download(url: string, onCompleted?: ICallback) {
     let pathname = URL.parse(url).pathname;
-    if(pathname.split("/").pop() === ""){
+    let last = pathname.split("/").pop();
+    if(last === ""){
       pathname += 'index.html'
     }
-
+    else if(!path.extname(last)){
+      pathname += '.html'
+    }
+    console.log("pathname", pathname);
     const filePath = path.join(outputDir, pathname);
     request.get(url, (err, httpResponse, body)=>{
       if(err){
@@ -48,8 +52,14 @@ class Downloader {
     })
     .on("response", (response) => {
       // download file
-      fs.ensureFileSync(filePath);
-      response.pipe(fs.createWriteStream(filePath));
+      try {
+        fs.ensureFileSync(filePath);
+        response.pipe(fs.createWriteStream(filePath));
+      } catch (error) {
+        console.log("write file error:", error);
+        fs.appendFile(logPath, `error: ${url} ${error}\n`);
+      }
+
       // show download progress bar
       // content-length isn't guaranteed so it could be 0 and make bug. set a value if content-length is 0.
       const len = parseInt(response.headers["content-length"], 10) || 100000000;
@@ -86,6 +96,7 @@ export default Downloader;
 //   "https://github.com/earlephilhower/esp-quick-toolchain/releases/download/2.5.0-3/x86_64-apple-darwin14.xtensa-lx106-elf-20ed2b9c.tar.gz",
 //   "https://github.com/earlephilhower/esp-quick-toolchain/releases/download/2.5.0-2/x86_64-apple-darwin14.xtensa-lx106-elf-59d892c8.tar.gz"];
 // const urlsArray5=[
+//   "https://github.com/esp8266/Arduino/releases/download/2.4.1/esp8266-2.4.1.zip",
 //   "https://github.com/esp8266/Arduino",
 //   "http://esp8266.com/arduino"
 // ];
