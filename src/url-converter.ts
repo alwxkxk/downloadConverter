@@ -88,5 +88,7 @@ class Converter {
   }
 }
 
-const test = new Converter();
-test.start("package_esp8266com_index.json");
+export default Converter;
+/* tslint:disable */
+// const test = new Converter();
+// test.start("package_esp8266com_index.json");
