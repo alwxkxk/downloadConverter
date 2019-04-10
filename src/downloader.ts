@@ -16,6 +16,7 @@ class Downloader {
     if (!urlsArray || !urlsArray.length) {
       return console.warn("urlsArray length is 0");
     }
+    console.log(`download file number:${urlsArray.length}`);
     // download by queue
     const q = queue((url: string, callback: ICallback) => {
       this .download(url, callback);

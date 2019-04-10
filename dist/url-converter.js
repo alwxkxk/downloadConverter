@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs-extra");
-const url = require("url");
 const path = require("path");
 const process = require("process");
+const URL = require("url");
 const rootPath = process.cwd();
 const outputDir = path.join(rootPath, "output");
 class Converter {
     start(inputFile) {
-        this.parseInput(inputFile);
+        return this.parseInput(inputFile);
     }
     /**
      * fetch url to this.urlArray form input string.
@@ -48,7 +48,7 @@ class Converter {
         // copy string
         let result = (" " + text).slice(1);
         this.urlArray.forEach((s) => {
-            p = url.parse(s);
+            p = URL.parse(s);
             result = result.replace(s, `http://127.0.0.1:8000${p.path}${p.hash}`);
         });
         return result;
@@ -58,13 +58,14 @@ class Converter {
      *
      * @private
      * @param {string} input file name
-     * @returns
+     * @returns {Promise< string[]>} urlArray
      * @memberof Converter
      */
     parseInput(fileName) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!fileName) {
-                return console.error("input is null.");
+                // console.error("input is null.");
+                return Promise.reject("input is null.");
             }
             const inputFile = path.join(rootPath, fileName);
             const urlsFile = path.join(outputDir, "input" + path.extname(fileName));
@@ -83,12 +84,16 @@ class Converter {
                 // replace url and save the output
                 const output = this.replaceUrl(text);
                 yield fs.outputFile(outputFile, output);
+                return Promise.resolve(this.urlArray);
             }
             catch (error) {
-                console.error(error);
+                // console.error(error);
+                return Promise.reject(error);
             }
         });
     }
 }
-const test = new Converter();
-test.start("package_esp8266com_index.json");
+exports.default = Converter;
+/* tslint:disable */
+// const test = new Converter();
+// test.start("package_esp8266com_index.json");

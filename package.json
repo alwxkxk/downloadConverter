@@ -18,15 +18,17 @@
   },
   "homepage": "https://github.com/alwxkxk/downloadConverter#readme",
   "dependencies": {
-    "@types/fs-extra": "^5.0.5",
-    "@types/progress": "^2.0.3",
-    "@types/request": "^2.48.1",
+    "async": "^2.6.2",
     "fs-extra": "^7.0.1",
     "progress": "^2.0.3",
     "request": "^2.88.0",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {
-    "@types/node": "^11.11.5"
+    "@types/async": "^2.4.1",
+    "@types/fs-extra": "^5.0.5",
+    "@types/node": "^11.11.5",
+    "@types/progress": "^2.0.3",
+    "@types/request": "^2.48.1"
   }
 }

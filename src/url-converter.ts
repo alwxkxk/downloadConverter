@@ -2,7 +2,6 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import * as process from "process";
 import * as URL from "url";
-
 const rootPath = process.cwd();
 const outputDir = path.join(rootPath, "output");
 
@@ -10,7 +9,7 @@ class Converter {
   private urlArray: string[];
 
   public start(inputFile: string) {
-    this .parseInput(inputFile);
+    return this .parseInput(inputFile);
   }
 
   /**
@@ -55,12 +54,13 @@ class Converter {
    *
    * @private
    * @param {string} input file name
-   * @returns
+   * @returns {Promise< string[]>} urlArray
    * @memberof Converter
    */
-  private async parseInput(fileName: string) {
+  private async parseInput(fileName: string):Promise< string[]> {
     if (!fileName) {
-      return console.error("input is null.");
+      // console.error("input is null.");
+      return Promise.reject("input is null.");
     }
     const inputFile = path.join(rootPath, fileName);
     const urlsFile = path.join(outputDir, "input" + path.extname(fileName));
@@ -81,9 +81,11 @@ class Converter {
       // replace url and save the output
       const output = this .replaceUrl(text);
       await fs.outputFile(outputFile, output);
+      return Promise.resolve(this .urlArray);
 
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      return Promise.reject(error);
     }
   }
 }
