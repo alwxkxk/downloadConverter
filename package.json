@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./dist/index.js",
-    "fix": "tslint --fix -c ./tslint.json 'src/**/*{.ts,.tsx}'"
+    "fix": "tslint --fix -c ./tslint.json 'src/**/*{.ts,.tsx}'",
+    "package":"pkg -t node8-win -c package.json ./dist/packager.js"
+  },
+  "pkg": {
+    "assets": "./output/**/*"
   },
   "repository": {
     "type": "git",
@@ -18,10 +22,14 @@
   },
   "homepage": "https://github.com/alwxkxk/downloadConverter#readme",
   "dependencies": {
+    "@types/connect": "^3.4.32",
     "async": "^2.6.2",
+    "connect": "^3.6.6",
     "fs-extra": "^7.0.1",
+    "pkg": "^4.3.7",
     "progress": "^2.0.3",
     "request": "^2.88.0",
+    "server-static": "^2.0.5",
     "typescript": "^3.3.4000"
   },
   "devDependencies": {
