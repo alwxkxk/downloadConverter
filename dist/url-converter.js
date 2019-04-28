@@ -15,7 +15,8 @@ const URL = require("url");
 const rootPath = process.cwd();
 const outputDir = path.join(rootPath, "output");
 class Converter {
-    start(inputFile) {
+    start(inputFile, options) {
+        this.options = options || {};
         return this.parseInput(inputFile);
     }
     /**
@@ -24,7 +25,8 @@ class Converter {
      * @param {string} text
      * @memberof Converter
      */
-    fetchUrl(text) {
+    fetchUrl(text, append) {
+        // TODO:filter
         const urlReg = /http[s]?:\/{2}(?:[\/-\w.]|(?:%[\da-fA-F]{2}))+/gm;
         const set = new Set();
         let match;
@@ -32,11 +34,26 @@ class Converter {
             match = urlReg.exec(text);
             if (match) {
                 const urlString = match[0];
-                set.add(urlString);
+                // filter includes
+                if (this.options.filter && this.options.filter.includes) {
+                    this.options.filter.includes.forEach((v) => {
+                        if (urlString.includes(v)) {
+                            set.add(urlString);
+                        }
+                    });
+                }
+                else {
+                    set.add(urlString);
+                }
                 // console.log(urlString);
             }
         } while (match);
-        this.urlArray = Array.from(set);
+        if (!append || !this.urlArray) {
+            this.urlArray = Array.from(set);
+        }
+        else {
+            this.urlArray = this.urlArray.concat(Array.from(set));
+        }
         // long string first
         this.urlArray.sort((a, b) => {
             return -(a.length - b.length);
@@ -67,19 +84,30 @@ class Converter {
                 // console.error("input is null.");
                 return Promise.reject("input is null.");
             }
-            const inputFile = path.join(rootPath, fileName);
-            const urlsFile = path.join(outputDir, "source_" + fileName);
-            const outputFile = path.join(outputDir, fileName);
-            const text = fs.readFileSync(inputFile, "utf-8");
+            let text;
+            let inputFile = path.join(rootPath, fileName);
+            let outputFile = path.join(outputDir, fileName);
+            if (this.options.multi) {
+                // read all file and fetchUrl
+                yield this.readFiles(fileName);
+                // console.log("readFiles complete.");
+            }
+            else {
+                // only one file.
+                text = fs.readFileSync(inputFile, "utf-8");
+                this.fetchUrl(text);
+            }
+            // output
             try {
                 // delete old output
                 yield fs.remove(outputDir);
                 // mkdir output
                 yield fs.ensureDir(outputDir);
                 // copy inputFile into output directory
-                fs.copy(inputFile, urlsFile);
+                if (this.options.saveSource) {
+                    fs.copy(inputFile, path.join(outputDir, "source_" + fileName));
+                }
                 // fetch url and save the urls.json
-                this.fetchUrl(text);
                 fs.outputJson(path.join(outputDir, "urls.json"), this.urlArray);
                 // replace url and save the output
                 const output = this.replaceUrl(text);
@@ -92,8 +120,40 @@ class Converter {
             }
         });
     }
+    readFiles(dir) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const scope = this;
+            // console.log("readFiles", dir);
+            return fs.readdir(dir)
+                .then((filesName) => __awaiter(this, void 0, void 0, function* () {
+                for (let i = 0; i < filesName.length; i++) {
+                    let fileName = filesName[i];
+                    let p = path.join(dir, fileName);
+                    let stat = fs.statSync(p);
+                    // console.log(fileName, stat.isDirectory());
+                    if (stat.isDirectory()) {
+                        // console.log(fileName, "is directory.");
+                        yield scope.readFiles(p);
+                    }
+                    else {
+                        yield fs.readFile(p, 'utf-8')
+                            .then((content) => {
+                            // console.log(fileName, "is file");
+                            scope.fetchUrl(content, true);
+                        });
+                    }
+                }
+            }))
+                .catch((err) => {
+                console.log(err);
+            });
+        });
+    }
 }
 exports.default = Converter;
 /* tslint:disable */
 // const test = new Converter();
 // test.start("package_esp8266com_index.json");
+// hexo posts: multi files
+// const test = new Converter();
+// test.start("_posts",{multi:true,filter:{includes:["sinaimg"]}});

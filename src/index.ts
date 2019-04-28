@@ -11,3 +11,17 @@ converter.start("package_esp8266com_index.json")
 .catch((error)=>{
   console.log("err:", error);
 });
+
+// hexo post img save in sinaimg
+// converter.start("_posts", {
+//   multi:true,
+//   filter:{
+//     includes:["sinaimg"]
+//   }
+// })
+// .then((urlsArray)=>{
+//   downloader.start(urlsArray);
+// })
+// .catch((error)=>{
+//   console.log("err:", error);
+// });

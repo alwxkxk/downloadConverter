@@ -163,5 +163,5 @@ export default Converter;
 // test.start("package_esp8266com_index.json");
 
 // hexo posts: multi files
-const test = new Converter();
-test.start("_posts",{multi:true,filter:{includes:["sinaimg"]}});
+// const test = new Converter();
+// test.start("_posts",{multi:true,filter:{includes:["sinaimg"]}});
